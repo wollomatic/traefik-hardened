@@ -1,0 +1,12 @@
+# sample file provider to route to nonexistant service
+# it's just a sample and makes no sense.
+# You could use a middleware for redirection for example
+http:
+  routers:
+    srv:
+      entrypoints: web-secure
+      rule: "Host(`noop.example.invalid`)"
+      tls:
+        certresolver: tlschallenge
+      middlewares: secHeaders@file
+      service: noop@internal # I'm a teapot :)

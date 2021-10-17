@@ -1,0 +1,61 @@
+services:
+  dockerproxy: # see https://github.com/Tecnativa/docker-socket-proxy
+    image: ghcr.io/tecnativa/docker-socket-proxy:0.1.1 # this image is rather old but used to have a pinned version
+                                                       # newer version is ghcr.io/tecnativa/docker-socket-proxy:edge
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro   # never expose this container to the internet!
+    environment:
+      CONTAINERS: 1
+    networks:
+      - docker-proxynet # use only internal network
+
+  traefik:
+    image: traefik:2.5.3 # use current version
+    restart: unless-stopped
+    read_only: true
+    depends_on:
+      - dockerproxy
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro    # Static Traefik Configuration
+      - ./config/dynamic/:/etc/traefik/dynamic/:ro            # Folder to store dynamic configuration file provider
+      - ./config/authusers.txt:/etc/traefik/authusers.txt:ro  # userfile for basic auth
+      - ./config/acme/acme.json:/etc/traefik/acme.json        # certificate storage
+    user: "2000:2000" # user traefik has to be created on the host system
+                      # sudo useradd -u 2000 -M -s /usr/sbin/nologin traefik
+    labels:
+      - "traefik.enable=true"
+      
+      # expose traefik dashboard with TLS and basic auth
+      # 1. create router
+      - "traefik.http.routers.traefik.rule=Host(`traefik.example.invalid`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=tlschallenge"
+      - "traefik.http.routers.traefik.entrypoints=web-secure"
+      - "traefik.http.routers.traefik.middlewares=traefik-auth, secHeaders@file"
+      # 2. create basic auth middleware
+      - "traefik.http.middlewares.traefik-auth.basicauth.removeheader=true"
+      - "traefik.http.middlewares.traefik-auth.basicauth.usersfile=/etc/traefik/authusers.txt"
+
+      # this would be another possibility to create an catch-all on port 80 with redirection to https
+      # but we connected the unencrypted entrypoint to the redirection in the static configuration:
+      # - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      # - "traefik.http.routers.http-catchall.entrypoints=web"
+      # - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    networks:
+      - traefik-servicenet
+      - docker-proxynet
+    ports:
+      - "80:10080"  # use high ports inside the container so
+      - "443:10443" # we don't need to be root to bind the ports
+
+networks:
+  traefik-servicenet:
+    external: true           # this network has to be created once before starting:
+    name: traefik-servicenet # docker network create traefik-servicenet
+  docker-proxynet:
+    driver: bridge
+    internal: true
