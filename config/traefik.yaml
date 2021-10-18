@@ -17,7 +17,7 @@ entryPoints:
     http:
       redirections:   # redirect entire entrypoint to https
         entryPoint:
-          to: web-secure
+          to: ':443'
           scheme: https      
   web-secure:
     address: ':10443' # will be routed to port 443, see docker-compose.yaml
