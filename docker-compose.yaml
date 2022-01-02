@@ -3,6 +3,8 @@ services:
     image: ghcr.io/tecnativa/docker-socket-proxy:0.1.1 # this image is rather old but used to have a pinned version
                                                        # newer version is ghcr.io/tecnativa/docker-socket-proxy:edge
     restart: unless-stopped
+    mem_limit: 2G
+    cpus: 0.75
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro   # never expose this container to the internet!
     environment:
@@ -14,6 +16,8 @@ services:
     image: traefik:2.5 # use current version 2.5.x
     restart: unless-stopped
     read_only: true
+    mem_limit: 2G
+    cpus: 0.75
     depends_on:
       - dockerproxy
     security_opt:
