@@ -11,7 +11,7 @@ services:
       - docker-proxynet # use only internal network
 
   traefik:
-    image: traefik:2.5.3 # use current version
+    image: traefik:2.5 # use current version 2.5.x
     restart: unless-stopped
     read_only: true
     depends_on:
