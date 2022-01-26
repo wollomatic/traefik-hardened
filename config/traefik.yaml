@@ -21,6 +21,9 @@ entryPoints:
           scheme: https      
   web-secure:
     address: ':10443' # will be routed to port 443, see docker-compose.yaml
+    http3:
+      advertisedPort: 443
+    
 certificatesResolvers:
   tlschallenge:
     acme:
@@ -29,5 +32,7 @@ certificatesResolvers:
       email: hostmaster@example.invalid
       storage: /etc/traefik/acme.json
       tlsChallenge: {}
+experimental:
+  http3: true
 global:
   sendAnonymousUsage: true # set to false, if you don't want to send anonymous usage data
