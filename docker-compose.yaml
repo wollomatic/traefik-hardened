@@ -13,7 +13,7 @@ services:
       - docker-proxynet # use only internal network
 
   traefik:
-    image: traefik:2.6 # use current version 2.6.x
+    image: traefik:2.8 # use current version 2.8.x
     restart: unless-stopped
     read_only: true
     mem_limit: 2G
