@@ -1,16 +1,28 @@
 services:
-  dockerproxy: # see https://github.com/Tecnativa/docker-socket-proxy
-    image: ghcr.io/tecnativa/docker-socket-proxy:0.1.1 # this image is rather old but used to have a pinned version
-                                                       # newer version is ghcr.io/tecnativa/docker-socket-proxy:edge
+  dockerproxy:
+    image: wollomatic/socket-proxy:1.0.0 # see https://github.com/wollomatic/simple-traefik for reference
+    # this image replaced https://github.com/Tecnativa/docker-socket-proxy as the socket proxy
+    # for an example with the tecnativa proxy refer tags before 2.10
+    command:
+      # with this configuration socket-proxy acts similar to the tecnativa proxy. For additional hardening
+      # please refer to the documentation of the wollomatic/socket-proxy image
+      - '-loglevel=info' # set to debug for far more logging
+      - '-allowfrom=0.0.0.0/8'
+      - '-listenip=0.0.0.0'
+      - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)' # this regexp allows readonly access only for requests that traefik needs
+      - '-shutdowngracetime=5'
     restart: unless-stopped
-    mem_limit: 2G
-    cpus: 0.75
+    read_only: true
+    mem_limit: 64M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    user: 65534:<<docker-gid>> # replace <<docker-gid>> with the docker gid on your host system
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro   # never expose this container to the internet!
-    environment:
-      CONTAINERS: 1
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - docker-proxynet # use only internal network
+      - docker-proxynet
 
   traefik:
     image: traefik:2.10 # use current version 2.10.x
