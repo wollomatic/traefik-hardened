@@ -1,6 +1,6 @@
 services:
   dockerproxy:
-    image: wollomatic/socket-proxy:1.0.0 # see https://github.com/wollomatic/simple-traefik for reference
+    image: wollomatic/socket-proxy:1 # see https://github.com/wollomatic/simple-traefik for reference
     # this image replaced https://github.com/Tecnativa/docker-socket-proxy as the socket proxy
     # for an example with the tecnativa proxy refer tags before 2.10
     command:
