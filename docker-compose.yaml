@@ -7,7 +7,7 @@ services:
       # with this configuration socket-proxy acts similar to the tecnativa proxy. For additional hardening
       # please refer to the documentation of the wollomatic/socket-proxy image
       - '-loglevel=info' # set to debug for far more logging
-      - '-allowfrom=0.0.0.0/8'
+      - '-allowfrom=0.0.0.0/0'
       - '-listenip=0.0.0.0'
       - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)' # this regexp allows readonly access only for requests that traefik needs
       - '-shutdowngracetime=5'
