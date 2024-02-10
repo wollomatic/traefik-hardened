@@ -11,6 +11,8 @@ services:
       - '-listenip=0.0.0.0'
       - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)' # this regexp allows readonly access only for requests that traefik needs
       - '-shutdowngracetime=5'
+      - '-watchdoginterval=600'
+      - '-stoponwatchdog'
     restart: unless-stopped
     read_only: true
     mem_limit: 64M
