@@ -29,9 +29,24 @@ certificatesResolvers:
     acme:
       # uncomment next line for testing purpose
       # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: hostmaster@example.invalid
+      email: hostmaster@example.invalid # replace with your email address
       storage: /etc/traefik/acme.json
       tlsChallenge: {}
+## here an example for a dns challenge:
+#  dnschallenge:
+#    acme:
+#      email: hostmaster@example.invalid # replace with your email address
+#      storage: /etc/traefik/acmedns.json
+#      # uncomment next line for testing purpose
+#      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+#      keyType: 'EC384' # optional, default is 'RSA4096', allowed is 'EC256', 'EC384', 'RSA2048', 'RSA4096', 'RSA8192'.
+#      dnsChallenge:
+#        provider: <<Provider Code>> # see https://doc.traefik.io/traefik/https/acme/#providers
+#        delayBeforeCheck: 0
+#        resolvers:
+#          - "9.9.9.9:53"
+#          - "1.1.1.1:53"
+
 experimental:
   http3: true
 global:
