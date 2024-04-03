@@ -27,7 +27,7 @@ services:
       - docker-proxynet
 
   traefik:
-    image: traefik:2.10 # use current version 2.10.x
+    image: traefik:2.11 # always look for the most recent version
     restart: unless-stopped
     read_only: true
     mem_limit: 2G
