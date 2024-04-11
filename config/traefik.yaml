@@ -21,10 +21,6 @@ entryPoints:
           scheme: https      
   web-secure:
     address: ':10443' # will be routed to port 443, see docker-compose.yaml
-    transport:
-      respondingTimeouts:
-        tcp:
-          lingeringTimeout: 30
     http3:
       advertisedPort: 443
     
